@@ -37,9 +37,10 @@ export class MinesweeperRender {
     for (let x in this.grid) {
       for (let y in this.grid[x]) {
         this.renderCell(x, y, this.grid[x][y].type);
+        if (this.grid[x][y].highlight) this.renderHighlight(x, y);
         if (this.grid[x][y].flag) this.renderFlag(x, y);
-        if (this.grid[x][y].highlighted) this.renderHighlight(x, y);
-        this.renderNumber(x, y, this.grid[x][y].number);
+        if (this.grid[x][y].numberVisible)
+          this.renderNumber(x, y, this.grid[x][y].number);
       }
     }
   }

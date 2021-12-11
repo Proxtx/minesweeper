@@ -1,5 +1,6 @@
 import { MinesweeperRender } from "./render.js";
 import { generate } from "./generate.js";
+import { Logic } from "./logic.js";
 const canvas = document.getElementById("canvas");
 
 canvas.width = 800;
@@ -30,7 +31,7 @@ const genDemoGrid = (gridX, gridY) => {
           false,
           true,
         ][random(0, 10)],
-        highlighted: [
+        highlight: [
           false,
           false,
           false,
@@ -55,3 +56,4 @@ const render = new MinesweeperRender(canvas);
 render.setGrid(demoGrid);
 
 render.render();
+new Logic(render);
