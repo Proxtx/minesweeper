@@ -1,5 +1,8 @@
 export class Logic {
-  mousemoveHighlight = false;
+  lastMousemoveHighlight = false;
+  lastLeftDown = 0;
+  multiHighlight = [];
+  currentlyMultiClick = false;
 
   constructor(render) {
     this.render = render;
@@ -7,46 +10,138 @@ export class Logic {
     this.canvas = this.render.canvas;
     this.canvas.addEventListener("click", this.click.bind(this));
     this.canvas.addEventListener("mousemove", this.mousemove.bind(this));
-    this.canvas.addEventListener("contextmenu", this.rightClick.bind(this));
+    this.canvas.addEventListener("mouseup", this.mouseup.bind(this));
+    this.canvas.addEventListener("mousedown", this.mousedown.bind(this));
+    this.canvas.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+    });
     this.renderLoop();
   }
 
   click(e) {
-    let x = Math.floor(e.offsetX / this.render.cellSize);
-    let y = Math.floor(e.offsetY / this.render.cellSize);
-    if (this.grid[x][y].mine) {
-      console.log("You lose");
+    if (e.buttons > 1) {
       return;
     }
-    this.grid[x][y].numberVisible = true;
-    this.grid[x][y].type = 1;
+    let x = Math.floor(e.offsetX / this.render.cellSize);
+    let y = Math.floor(e.offsetY / this.render.cellSize);
+    this.tileClick(x, y);
   }
   mousemove(e) {
-    if (this.mousemoveHighlight) {
-      this.grid[this.mousemoveHighlight.x][
-        this.mousemoveHighlight.y
-      ].highlight = false;
-    }
     let x = Math.floor(e.offsetX / this.render.cellSize);
     let y = Math.floor(e.offsetY / this.render.cellSize);
-    if (x < this.grid.length && y < this.grid[0].length) {
-      this.grid[x][y].highlight = true;
-      this.mousemoveHighlight = { x, y };
+    this.mousemoveHighlight(x, y);
+    if (this.currentlyMultiClick) {
+      this.multiClick(x, y);
     }
   }
-  rightClick(e) {
-    e.preventDefault();
+  mouseup(e) {
+    this.currentlyMultiClick = false;
+    for (let i of this.multiHighlight) {
+      i.highlight = false;
+    }
+    if (e.which == 1) this.lastLeftDown = Date.now();
+    if (e.buttons > 0 || e.which != 3 || Date.now() - this.lastLeftDown < 100) {
+      return;
+    }
     let x = Math.floor(e.offsetX / this.render.cellSize);
     let y = Math.floor(e.offsetY / this.render.cellSize);
-    if (this.grid[x][y].flag) {
-      this.grid[x][y].flag = false;
-    } else if (!this.grid[x][y].numberVisible) {
-      this.grid[x][y].flag = true;
+    this.placeFlag(x, y);
+  }
+  mousedown(e) {
+    let x = Math.floor(e.offsetX / this.render.cellSize);
+    let y = Math.floor(e.offsetY / this.render.cellSize);
+    if (e.buttons > 2) {
+      this.currentlyMultiClick = true;
+      this.multiClick(x, y);
     }
   }
 
   renderLoop() {
     this.render.render();
     requestAnimationFrame(this.renderLoop.bind(this));
+  }
+
+  tileClick(x, y) {
+    this.grid[x][y].reveal();
+    if (this.grid[x][y].isEmpty()) {
+      let reveal = this.genRevealField(x, y);
+      for (let key in reveal) {
+        let [x, y] = key.split(",");
+        this.grid[x][y].reveal();
+      }
+    }
+  }
+
+  mousemoveHighlight(x, y) {
+    if (this.lastMousemoveHighlight) {
+      this.grid[this.lastMousemoveHighlight.x][
+        this.lastMousemoveHighlight.y
+      ].highlight = false;
+    }
+    if (x < this.grid.length && y < this.grid[0].length) {
+      this.grid[x][y].highlight = true;
+      this.lastMousemoveHighlight = { x, y };
+    }
+  }
+
+  placeFlag(x, y) {
+    this.grid[x][y].toggleFlag();
+  }
+
+  multiClick(x, y) {
+    for (let i of this.multiHighlight) {
+      i.highlight = false;
+    }
+    if (this.grid[x][y].type == 0) return;
+    let revealCells = [];
+    for (let xNear = -1; xNear < 2; xNear++) {
+      for (let yNear = -1; yNear < 2; yNear++) {
+        if (this.grid[x + xNear] && this.grid[x + xNear][y + yNear]) {
+          if (xNear == 0 && yNear == 0) continue;
+          if (!this.grid[x + xNear][y + yNear].flag) {
+            revealCells.push([
+              this.tileClick.bind(this, x + xNear, y + yNear),
+              this.grid[x + xNear][y + yNear],
+            ]);
+          }
+        } else {
+          revealCells.push(null);
+        }
+      }
+    }
+    if (8 - revealCells.length == this.grid[x][y].number) {
+      for (let cell of revealCells) {
+        if (cell && cell[0]) cell[0]();
+      }
+    } else {
+      this.multiHighlight = [];
+      for (let cell of revealCells) {
+        if (cell && cell[1] && cell[1].type == 0) {
+          this.multiHighlight.push(cell[1]);
+          cell[1].highlight = true;
+        }
+      }
+    }
+  }
+
+  genRevealField(x, y, reveal = {}) {
+    for (let xNear = -1; xNear < 2; xNear++) {
+      for (let yNear = -1; yNear < 2; yNear++) {
+        if (
+          reveal[x + xNear + "," + (y + yNear)] ||
+          !this.grid[x + xNear] ||
+          !this.grid[x + xNear][y + yNear] ||
+          this.grid[x + xNear][y + yNear].mine
+        ) {
+          continue;
+        } else {
+          reveal[x + xNear + "," + (y + yNear)] = true;
+          if (this.grid[x + xNear][y + yNear].isEmpty()) {
+            this.genRevealField(x + xNear, y + yNear, reveal);
+          }
+        }
+      }
+    }
+    return reveal;
   }
 }

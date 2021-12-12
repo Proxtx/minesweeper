@@ -1,11 +1,11 @@
+import { Cell } from "./cell.js";
+
 export const generate = (mines, gridX, gridY) => {
   let grid = [];
   for (let x = 0; x < gridX; x++) {
     grid.push([]);
     for (let y = 0; y < gridY; y++) {
-      grid[x].push({
-        type: 0,
-      });
+      grid[x].push(new Cell(x, y));
     }
   }
   for (let i = 0; i < mines; i++) {

@@ -50,7 +50,7 @@ const genDemoGrid = (gridX, gridY) => {
   return grid;
 };
 
-const demoGrid = generate(40, 10, 10);
+const demoGrid = generate(100, 30, 30);
 
 const render = new MinesweeperRender(canvas);
 render.setGrid(demoGrid);
