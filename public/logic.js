@@ -16,6 +16,29 @@ export class Logic {
       e.preventDefault();
     });
     this.renderLoop();
+    if (window.cheat) {
+      this.tileClick(
+        Math.round(this.grid.length / 2),
+        Math.round(this.grid[0].length / 2)
+      );
+      this.cheat();
+    }
+  }
+
+  async cheat() {
+    let prevH = this.grid[0][0];
+    while (true) {
+      for (let x = 0; x < this.grid.length; x++) {
+        for (let y = 0; y < this.grid[x].length; y++) {
+          if (this.grid[x][y].type == 0 || !this.grid[x][y].number) continue;
+          await new Promise((r) => setTimeout(r, 10));
+          this.multiClick(x, y);
+          prevH.highlight = false;
+          prevH = this.grid[x][y];
+          prevH.highlight = true;
+        }
+      }
+    }
   }
 
   click(e) {
@@ -94,6 +117,7 @@ export class Logic {
     }
     if (this.grid[x][y].type == 0) return;
     let revealCells = [];
+    let flags = 0;
     for (let xNear = -1; xNear < 2; xNear++) {
       for (let yNear = -1; yNear < 2; yNear++) {
         if (this.grid[x + xNear] && this.grid[x + xNear][y + yNear]) {
@@ -103,6 +127,8 @@ export class Logic {
               this.tileClick.bind(this, x + xNear, y + yNear),
               this.grid[x + xNear][y + yNear],
             ]);
+          } else {
+            flags++;
           }
         } else {
           revealCells.push(null);
@@ -119,6 +145,14 @@ export class Logic {
         if (cell && cell[1] && cell[1].type == 0) {
           this.multiHighlight.push(cell[1]);
           cell[1].highlight = true;
+        }
+      }
+      if (
+        this.grid[x][y].number - flags == this.multiHighlight.length &&
+        window.cheat
+      ) {
+        for (let cell of this.multiHighlight) {
+          cell.flag = true;
         }
       }
     }
