@@ -9,7 +9,27 @@
   </head>
   <body>
     <div class="component">
-      <canvas id="canvas"></canvas>
+      <div id="screenWrap">
+        <div class="background flexCenter">
+          <div id="startScreenWrap" class="flexCenter">
+            <h1>Minesweeper</h1>
+            <input type="number" class="input" id="lobbyId" />
+            <div class="flexRow">
+              <button class="button" onclick="watchLobby(document.getElementById('lobbyId').value);">Spectate</button>
+              <button class="button" onclick="playLobby(document.getElementById('lobbyId').value)">Play</button>
+              <button class="button" onclick="createAndPlayLobby();">Create</button>
+            </div>
+          </div>
+        </div>
+        <div class="background flexCenter" id="mainBackground">
+          <div id="sideBar">
+            <a class="textRound"> {status} </a>
+            <a class="textTransparent">{lobbyId}</a>
+            <a class="textGreen">{timer}</a>
+          </div>
+          <div id="canvasWrap">
+        </div>
+      </div>
     </div>
     <script src="main.js" type="module"></script>
   </body>

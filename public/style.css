@@ -1,0 +1,129 @@
+@font-face {
+  font-family: "Ropa Sans";
+  src: url("./ropaSans.ttf");
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --grass1: #aad751;
+  --grass2: #a2d149;
+  --dirt1: #e5c29f;
+  --dirt2: #d7b899;
+  --seven: #424242;
+  --transparent: rgba(255, 255, 255, 0.38);
+  font-family: Ropa Sans;
+  color: var(--seven);
+}
+
+.background {
+  background-color: var(--dirt1);
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+  left: 0%;
+  transition: 1s;
+}
+
+.flexCenter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#startScreenWrap {
+  background-color: var(--grass2);
+  padding: 68px;
+  flex-direction: column;
+  border-radius: 19px;
+  gap: 20px;
+}
+
+.input {
+  background-color: var(--transparent);
+  padding: 15px;
+  border: 0;
+  text-align: center;
+}
+
+.input:focus {
+  outline: none;
+}
+
+.button {
+  background-color: var(--grass1);
+  padding: 13px;
+  border: 0;
+  font-family: Ropa Sans;
+  cursor: pointer;
+}
+
+.flexRow {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#sideBar {
+  height: 100%;
+  background-color: var(--grass2);
+  border-radius: 0px 19px 19px 0px;
+  padding: 18px;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.textRound {
+  border-radius: 17px;
+  padding: 14px 50px 14px 50px;
+  background-color: var(--transparent);
+  text-align: center;
+}
+
+.textTransparent {
+  padding: 14px 50px 14px 50px;
+  background-color: var(--transparent);
+  text-align: center;
+}
+
+.textGreen {
+  padding: 14px 50px 14px 50px;
+  background-color: var(--grass1);
+  text-align: center;
+}
+
+#screenWrap {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  flex-wrap: wrap;
+}
+
+.canvas {
+  border: 3px solid var(--dirt2);
+  border-radius: 3px;
+  aspect-ratio: 1;
+}
+
+#canvasWrap {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  gap: 10px;
+  width: 100%;
+}
+
+#mainBackground {
+  justify-content: space-between;
+}

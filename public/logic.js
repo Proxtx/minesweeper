@@ -3,6 +3,7 @@ export class Logic {
   lastLeftDown = 0;
   multiHighlight = [];
   currentlyMultiClick = false;
+  changeListeners = [];
 
   constructor(render) {
     this.render = render;
@@ -48,6 +49,7 @@ export class Logic {
     let x = Math.floor(e.offsetX / this.render.cellSize);
     let y = Math.floor(e.offsetY / this.render.cellSize);
     this.tileClick(x, y);
+    this.change();
   }
   mousemove(e) {
     let x = Math.floor(e.offsetX / this.render.cellSize);
@@ -69,6 +71,7 @@ export class Logic {
     let x = Math.floor(e.offsetX / this.render.cellSize);
     let y = Math.floor(e.offsetY / this.render.cellSize);
     this.placeFlag(x, y);
+    this.change();
   }
   mousedown(e) {
     let x = Math.floor(e.offsetX / this.render.cellSize);
@@ -101,7 +104,7 @@ export class Logic {
         this.lastMousemoveHighlight.y
       ].highlight = false;
     }
-    if (x < this.grid.length && y < this.grid[0].length) {
+    if (this.grid[x] && this.grid[x][y]) {
       this.grid[x][y].highlight = true;
       this.lastMousemoveHighlight = { x, y };
     }
@@ -156,6 +159,7 @@ export class Logic {
         }
       }
     }
+    this.change();
   }
 
   genRevealField(x, y, reveal = {}) {
@@ -177,5 +181,11 @@ export class Logic {
       }
     }
     return reveal;
+  }
+
+  change() {
+    for (let i of this.changeListeners) {
+      i(this);
+    }
   }
 }
