@@ -1,3 +1,5 @@
+import { config } from "./config.js";
+
 let lobbies = {};
 
 export const createLobby = (grid) => {
@@ -39,3 +41,5 @@ export const getPlayerGrids = (lobbyId) => {
 
   return { success: true, players: lobby.players };
 };
+
+export const grid = config.grid;

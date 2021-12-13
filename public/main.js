@@ -10,8 +10,16 @@ let playerId;
 
 const server = await genModule(location.href + "api/");
 
+console.log(await server.grid);
+
+const gridSettings = await server.grid;
+
 const createLobby = async () => {
-  lobbyId = (await server.createLobby(generate(50, 20, 20))).lobbyId;
+  lobbyId = (
+    await server.createLobby(
+      generate(gridSettings.bombs, gridSettings.width, gridSettings.height)
+    )
+  ).lobbyId;
 };
 
 window.playLobby = async (pLobbyId) => {

@@ -1,6 +1,7 @@
 import express from "express";
 import process from "process";
 import { router, addModule } from "@proxtx/combine/serveRoute.js";
+import { config } from "./config.js";
 
 const app = express();
 
@@ -14,4 +15,4 @@ app.get("/combine.js", (req, res) => {
 
 addModule("game.js");
 
-app.listen(80);
+app.listen(config.port);
